@@ -379,8 +379,13 @@ input[type=file].hidden-file{display:none;}
 <script>
 /* ── CONFIG ──────────────────────────────────────────────── */
 const SUPABASE_URL = 'https://rifwiturqgeliyjlcbq.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_KtZkvNThUtNMAvTyBdHbNg_KMtNl5J9';
-const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpZndpdHJ1cnFnZWxpeWpsY2JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNDg1MDksImV4cCI6MjA5NjYyNDUwOX0.ZC64Xpam5uC9kFjNWKClOcjK6O0UYvC25Z6Y9q2al_8';
+const HEADERS = { 
+  'apikey': SUPABASE_KEY, 
+  'Authorization': 'Bearer ' + SUPABASE_KEY,
+  'Content-Type': 'application/json', 
+  'Prefer': 'return=representation'
+};
 
 /* ── STATE ───────────────────────────────────────────────── */
 let currentUser   = localStorage.getItem('sjv_username') || null;
