@@ -466,6 +466,8 @@ input[type=file].hidden-file{display:none;}
 /* ── CONFIG ─────────────────────────────────────────────── */
 const SUPABASE_URL = 'https://rifwiturqgeliyjlcbq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpZndpdHJ1cnFnZWxpeWpsY2JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNDg1MDksImV4cCI6MjA5NjYyNDUwOX0.ZC64Xpam5uC9kFjNWKClOcjK6O0UYvC25Z6Y9q2al_8';
+// Force correct REST endpoint
+const REST_URL = SUPABASE_URL + '/rest/v1';
 const PAYPAL_EMAIL = 'wave808mgmt@gmail.com';
 const HEADERS = {
   'apikey': SUPABASE_KEY,
@@ -494,18 +496,19 @@ const audio       = document.getElementById('main-audio');
 
 /* ── SUPABASE ───────────────────────────────────────────── */
 async function sbGet(table, params='') {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, { headers: HEADERS });
-  if (!r.ok) throw new Error(await r.text());
+  const url = `${REST_URL}/${table}?${params}`;
+  const r = await fetch(url, { headers: HEADERS });
+  if (!r.ok) { const t = await r.text(); console.error('sbGet error:', r.status, t); throw new Error(t); }
   return r.json();
 }
 async function sbPost(table, body) {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, { method:'POST', headers: HEADERS, body: JSON.stringify(body) });
-  if (!r.ok) throw new Error(await r.text());
+  const r = await fetch(`${REST_URL}/${table}`, { method:'POST', headers: HEADERS, body: JSON.stringify(body) });
+  if (!r.ok) { const t = await r.text(); console.error('sbPost error:', r.status, t); throw new Error(t); }
   return r.json();
 }
 async function sbPatch(table, params, body) {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, { method:'PATCH', headers: HEADERS, body: JSON.stringify(body) });
-  if (!r.ok) throw new Error(await r.text());
+  const r = await fetch(`${REST_URL}/${table}?${params}`, { method:'PATCH', headers: HEADERS, body: JSON.stringify(body) });
+  if (!r.ok) { const t = await r.text(); console.error('sbPatch error:', r.status, t); throw new Error(t); }
   return r.json();
 }
 async function uploadFile(file, folder) {
@@ -524,9 +527,17 @@ async function uploadFile(file, folder) {
 async function testConn() {
   const el = document.getElementById('conn-dot');
   try {
-    await sbGet('beats','limit=1');
-    el.innerHTML = '● CONNECTED'; el.className='conn-ok';
+    const res = await fetch(`${REST_URL}/beats?limit=1`, { headers: HEADERS });
+    console.log('Connection test status:', res.status);
+    if (res.ok) {
+      el.innerHTML = '● CONNECTED'; el.className='conn-ok';
+    } else {
+      const txt = await res.text();
+      console.error('Connection failed:', res.status, txt);
+      el.innerHTML = '● ERROR '+res.status; el.className='conn-err';
+    }
   } catch(e) {
+    console.error('Connection exception:', e);
     el.innerHTML = '● OFFLINE'; el.className='conn-err';
   }
 }
